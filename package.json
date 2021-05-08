@@ -21,6 +21,7 @@
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
     "node-fetch": "^2.6.1",
+    "serve-favicon": "^2.5.0",
     "web-push": "^3.4.4"
   }
 }
