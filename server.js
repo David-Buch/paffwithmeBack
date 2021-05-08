@@ -16,13 +16,11 @@ app.use('/notification', notification);
 app.use(express.json());
 
 app.use(cors({
-    origin: ['http://127.0.0.1:3000', 'http://10.0.0.1:3000', 'https://paffwithme.netlify.app'],//Frontend
+    origin: ['http://10.0.0.1:3000', 'https://paffwithme.netlify.app', 'https://smokeapipe.netlify.app'],//Frontend
     methods: ['GET', 'POST'],
     credentials: true,
 })
 );
-
-
 
 app.post('/register', (req, res) => {
     const username = req.body.username;
