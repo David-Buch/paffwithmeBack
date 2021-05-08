@@ -101,4 +101,4 @@ function authenticateToken(req, res, next) {
     })
 }
 
-app.listen(3003, () => console.log('up and running'));
+app.listen(process.env.PORT || 3003, () => console.log('up and running'));
