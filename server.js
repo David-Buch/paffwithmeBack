@@ -8,10 +8,10 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const notification = require('./routes/notification');
 const db = require('./config/UserDB');
-//const favicon = require('serve-favicon');
+const favicon = require('serve-favicon');
 
 const app = express();
-//app.use(favicon(path.join(__dirname, 'dist', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, 'favicon.ico')));
 app.use('/notification', notification);
 
 

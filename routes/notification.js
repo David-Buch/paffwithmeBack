@@ -4,6 +4,7 @@ const webPush = require('web-push');
 const router = express.Router();
 const db = require('../config/UserDB');
 
+
 //VapidKeys
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
