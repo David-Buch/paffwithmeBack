@@ -3,7 +3,14 @@ require('dotenv').config();
 const webPush = require('web-push');
 const router = express.Router();
 const db = require('../config/UserDB');
+const cors = require('cors');
 
+router.use(cors({
+    origin: ['http://10.0.0.1:3000', 'https://paffwithme.netlify.app', 'https://smokeapipe.netlify.app'],//Frontend
+    methods: ['GET', 'POST'],
+    credentials: true,
+})
+);
 
 //VapidKeys
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
