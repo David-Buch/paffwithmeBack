@@ -14,18 +14,11 @@ webPush.setVapidDetails('mailto:dbuchi0802@gmail.com', publicVapidKey, privateVa
 // Set up CORS and allow any host for now to test things out
 // WARNING! Don't use `*` in production unless you intend to allow all hosts
 router.use(express.json());
-router.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    return next();
-});
 
 // Allow clients to subscribe to this application server for notifications
 router.post('/subscribe', (req, res) => {
-    if (isValidSaveRequest(req, res)) {
-        console.log(req.body);
-        saveSubscriptionToDatabase(req.body, res)
-    }
+    console.log(req.body);
+    saveSubscriptionToDatabase(req.body, res)
 });
 
 const isValidSaveRequest = (req, res) => {
@@ -50,6 +43,7 @@ function saveSubscriptionToDatabase(req, res) {
     const auth = req.authKey;
     console.log(username, endpoint, auth);
     db.query("UPDATE userdata SET endPoint=?, auth=? WHERE username=? LIMIT 1", [endpoint, auth, username], (err, result) => {
+        console.log(result);
         if (err) { res.send({ error: err, success: false }); }
         else {
             console.log('endpoint set worked');
