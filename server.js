@@ -11,7 +11,7 @@ const db = require('./config/UserDB');
 const favicon = require('serve-favicon');
 
 const app = express();
-app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, 'dist', 'favicon.ico')));
 app.use('/notification', notification);
 
 
@@ -23,6 +23,9 @@ app.use(cors({
     credentials: true,
 })
 );
+app.get('/', function (req, res) {
+    console.log('hi');
+});
 
 app.post('/register', (req, res) => {
     const username = req.body.username;
