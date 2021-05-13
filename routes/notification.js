@@ -11,6 +11,7 @@ router.use(cors({
     credentials: true,
 })
 );
+router.use(express.json());
 
 //VapidKeys
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
@@ -19,14 +20,13 @@ const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
 //Tell web push about our application server
 webPush.setVapidDetails('mailto:dbuchi0802@gmail.com', publicVapidKey, privateVapidKey);
 
-// Set up CORS and allow any host for now to test things out
-// WARNING! Don't use `*` in production unless you intend to allow all hosts
-router.use(express.json());
-
 // Allow clients to subscribe to this application server for notifications
 router.post('/subscribe', (req, res) => {
-    console.log(req.body);
-    saveSubscriptionToDatabase(req.body, res)
+    if (isValidSaveRequest(req, res)) {
+        console.log(req.body);
+        saveSubscriptionToDatabase(req.body, res)
+    }
+
 });
 
 const isValidSaveRequest = (req, res) => {
@@ -59,17 +59,22 @@ function saveSubscriptionToDatabase(req, res) {
         }
     });
 }
-
+//Send a push Notification
 router.post('/sendtoAll', (req, res) => {
-    //Send a push Notification
     const username = req.body.username;
+
     getSubcriptionsFromDB(username).then(function (pushDatas) {
+
         let promiseChain = Promise.resolve();
         for (let i = 0; i < pushDatas.length; i++) {
             const pushData = pushDatas[i];
-            promiseChain = promiseChain.then(() => {
-                return triggerPushMsg(pushData, req.body, res);
-            });
+            if (pushData.endPoint != '') {
+                promiseChain = promiseChain.then(() => {
+                    console.log(pushData);
+                    // works until here
+                    //return triggerPushMsg(pushData, req.body, res);
+                });
+            }
         }
     });
 });
@@ -91,7 +96,7 @@ const triggerPushMsg = function (pushData, dataToSend, res) {
         }
     };
     return webpush.sendNotification(pushSubscription, dataToSend).then(() => {
-        res.send(JSON.stringify({ success: true }));
+        res.send({ success: true });
     })
         .catch(function (err) {
             res.send(JSON.stringify({
