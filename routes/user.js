@@ -10,7 +10,7 @@ router.use(cors({
     methods: ['GET', 'POST'],
     credentials: true,
 }));
-app.use(function (req, res, next) {
+router.use(function (req, res, next) {
 
     // Website you wish to allow to connect
     res.setHeader('Access-Control-Allow-Origin', 'https://smokeapipe.netlify.app');
