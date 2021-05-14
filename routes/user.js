@@ -5,7 +5,6 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 router.use(express.json());
-router.use(express.urlencoded());
 
 router.post('/register', (req, res) => {
     const username = req.body.username;
