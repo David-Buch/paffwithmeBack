@@ -5,12 +5,6 @@ const router = express.Router();
 const db = require('../config/UserDB');
 const cors = require('cors');
 
-router.use(cors({
-    origin: ['http://10.0.0.1:3000', 'https://smokeapipe.netlify.app'],//Frontend
-    methods: ['GET', 'POST'],
-    credentials: true,
-})
-);
 router.use(express.json());
 
 //VapidKeys
