@@ -3,9 +3,6 @@ require('dotenv').config();
 const webPush = require('web-push');
 const router = express.Router();
 const db = require('../config/UserDB');
-const cors = require('cors');
-
-router.use(express.json());
 
 //VapidKeys
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY;

@@ -4,8 +4,6 @@ const db = require('../config/UserDB');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
-router.use(express.json());
-
 router.post('/register', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
