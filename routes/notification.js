@@ -62,21 +62,38 @@ function saveSubscriptionToDatabase(req, res) {
 //Send a push Notification
 router.post('/sendtoAll', (req, res) => {
     const username = req.body.username;
+    const payload = username + ' smoked a pipe at: ' + req.body.location;
+    console.log(payload);
 
     getSubcriptionsFromDB(username).then(function (pushDatas) {
-
         let promiseChain = Promise.resolve();
         for (let i = 0; i < pushDatas.length; i++) {
             const pushData = pushDatas[i];
             if (pushData.endPoint != '') {
                 promiseChain = promiseChain.then(() => {
-                    console.log(pushData);
-                    // works until here
-                    //return triggerPushMsg(pushData, req.body, res);
+                    return triggerPushMsg(pushData, payload);
                 });
             }
         }
-    });
+        console.log(promiseChain);
+        return promiseChain;
+    }).
+        then(() => {
+            res.setHeader('Content-Type', 'application/json');
+            res.send({ success: true });
+        })
+        .catch(function (err) {
+            console.log(err);
+            res.status(500);
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify({
+                error: {
+                    id: 'unable-to-send-messages',
+                    message: `We were unable to send messages to all subscriptions : ` +
+                        `'${err.message}'`
+                }
+            }));
+        });
 });
 function getSubcriptionsFromDB(username) {
     return new Promise(function (resolve, reject) {
@@ -87,7 +104,9 @@ function getSubcriptionsFromDB(username) {
         });
     });
 }
-const triggerPushMsg = function (pushData, dataToSend, res) {
+const triggerPushMsg = function (pushData, dataToSend) {
+    //"message": "We were unable to send messages to all subscriptions : 
+    //'To send a message with a payload, the subscription must have 'auth' and 'p256dh' keys.'"
     const pushSubscription = {
         endpoint: pushData.endPoint,
         keys: {
@@ -95,19 +114,18 @@ const triggerPushMsg = function (pushData, dataToSend, res) {
             auth: pushData.auth
         }
     };
-    return webpush.sendNotification(pushSubscription, dataToSend).then(() => {
-        res.send({ success: true });
-    })
-        .catch(function (err) {
-            res.send(JSON.stringify({
-                success: false,
-                error: {
-                    id: 'unable-to-send-messages',
-                    message: `We were unable to send messages to all subscriptions : ` +
-                        `'${err.message}'`
-                }
-            }));
-        })
+
+    console.log(pushSubscription);
+    return webPush.sendNotification(pushSubscription, dataToSend).then(console.log('push send'))
+        .catch((err) => {
+            console.log(err);
+            if (err.statusCode === 404 || err.statusCode === 410) {
+                console.log('Subscription has expired or is no longer valid: ', err);
+                //return deleteSubscriptionFromDatabase(subscription._id);
+            } else {
+                throw err;
+            }
+        });
 };
 
 module.exports = router;
