@@ -9,18 +9,11 @@ const favicon = require('serve-favicon');
 
 const app = express();
 app.use(favicon(path.join(__dirname, 'favicon.ico')));
+
 app.use('/notification', notification);
 app.use('/user', user);
 
 app.use(express.json());
-
-app.use(cors({
-    origin: ['http://10.0.0.1:3000', 'https://paffwithme.netlify.app', 'https://smokeapipe.netlify.app'],//Frontend
-    methods: ['GET', 'POST'],
-    credentials: true,
-})
-);
-
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['Authorization'];
