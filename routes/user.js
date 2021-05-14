@@ -2,7 +2,10 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/UserDB');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const saltRounds = 10;
+
+router.use(express.json());
 
 router.post('/register', (req, res) => {
     const username = req.body.username;
