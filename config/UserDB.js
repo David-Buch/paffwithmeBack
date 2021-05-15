@@ -1,13 +1,23 @@
 const mysql = require('mysql');
 
+var db_config = {
+    host: 'eu-cdbr-west-01.cleardb.com',
+    user: 'b5357ab4b70e69',
+    password: '7e5d2003',
+    database: 'heroku_cf88fcb1628b75b',
+};
+/*
+const pool = mysql.createPool({
+  host: 'localhost',
+  user: '--',
+  database: '---',
+  password: '----'
+});
+*/
 
 function handleDisconnect() {
-    const db = mysql.createConnection({
-        host: 'eu-cdbr-west-01.cleardb.com',
-        user: 'b5357ab4b70e69',
-        password: '7e5d2003',
-        database: 'heroku_cf88fcb1628b75b',
-    });
+    db = mysql.createConnection(db_config);
+
     db.connect(function (err) {              // The server is either down
         if (err) {                                     // or restarting (takes a while sometimes).
             console.log('error when connecting to db:', err);
@@ -25,5 +35,4 @@ function handleDisconnect() {
     });
     return db;
 }
-
 module.exports = handleDisconnect();
