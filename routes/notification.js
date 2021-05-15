@@ -42,13 +42,22 @@ function saveSubscriptionToDatabase(req, res) {
     const username = req.username;
     const endpoint = req.endpoint;
     const auth = req.authKey;
-    console.log(username, endpoint, auth);
+
     db.query("UPDATE userdata SET endPoint=?, auth=? WHERE username=? LIMIT 1", [endpoint, auth, username], (err, result) => {
-        console.log(result);
         if (err) { res.send({ error: err, success: false }); }
+        if (result.affectedRows != 0) {
+            if (result.changedRows != 0) {
+                console.log('endpoint set worked');
+                res.send({ success: true });
+            }
+            else {
+                console.log('endpoint already set');
+                res.send({ success: true, message: 'endpoint already set' });
+            }
+        }
         else {
-            console.log('endpoint set worked');
-            res.send({ success: true });
+            console.log('user doesnt exist');
+            res.send({ success: false, message: 'user doesnt exist' });
         }
     });
 }
@@ -116,7 +125,7 @@ const triggerPushMsg = function (pushData, dataToSend) {
                 console.log('Subscription has expired or is no longer valid: ', err);
                 //return deleteSubscriptionFromDatabase(subscription._id);
             } else {
-                throw err;
+                console.log(err); //throw new err
             }
         });
 };
