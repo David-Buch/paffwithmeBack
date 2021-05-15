@@ -1,5 +1,6 @@
 const mysql = require('mysql');
 
+
 function handleDisconnect() {
     const db = mysql.createConnection({
         host: 'eu-cdbr-west-01.cleardb.com',
@@ -7,7 +8,6 @@ function handleDisconnect() {
         password: '7e5d2003',
         database: 'heroku_cf88fcb1628b75b',
     });
-
     db.connect(function (err) {              // The server is either down
         if (err) {                                     // or restarting (takes a while sometimes).
             console.log('error when connecting to db:', err);
@@ -23,7 +23,7 @@ function handleDisconnect() {
             throw err;                                  // server variable configures this)
         }
     });
+    return db;
 }
-handleDisconnect();
 
-module.exports = db;
+module.exports = handleDisconnect();
