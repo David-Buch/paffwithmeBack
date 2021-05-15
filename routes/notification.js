@@ -81,7 +81,6 @@ router.post('/sendtoAll', (req, res) => {
         return promiseChain;
     }).
         then(() => {
-            res.setHeader('Content-Type', 'application/json');
             res.send({ success: true });
         })
         .catch(function (err) {
@@ -125,7 +124,7 @@ const triggerPushMsg = function (pushData, dataToSend) {
                 console.log('Subscription has expired or is no longer valid: ', err);
                 //return deleteSubscriptionFromDatabase(subscription._id);
             } else {
-                console.log(err); //throw new err
+                throw new Error(err);
             }
         });
 };
