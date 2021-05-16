@@ -64,7 +64,10 @@ function saveSubscriptionToDatabase(req, res) {
 //Send a push Notification
 router.post('/sendtoAll', (req, res) => {
     const username = req.body.username;
-    const payload = username + ' smoked a pipe at: ' + req.body.location;
+    const payload = JSON.stringify({
+        username: username,
+        location: req.body.location
+    });
     console.log(payload);
 
     getSubcriptionsFromDB(username).then(function (pushDatas) {
@@ -77,7 +80,6 @@ router.post('/sendtoAll', (req, res) => {
                 });
             }
         }
-        console.log(promiseChain);
         return promiseChain;
     }).
         then(() => {
@@ -106,8 +108,6 @@ function getSubcriptionsFromDB(username) {
     });
 }
 const triggerPushMsg = function (pushData, dataToSend) {
-    //"message": "We were unable to send messages to all subscriptions : 
-    //'To send a message with a payload, the subscription must have 'auth' and 'p256dh' keys.'"
     const pushSubscription = {
         endpoint: pushData.endPoint,
         keys: {
@@ -115,8 +115,6 @@ const triggerPushMsg = function (pushData, dataToSend) {
             auth: pushData.auth
         }
     };
-
-    console.log(pushSubscription);
     return webPush.sendNotification(pushSubscription, dataToSend).then(console.log('push send'))
         .catch((err) => {
             console.log(err);
