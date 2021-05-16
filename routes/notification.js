@@ -68,25 +68,23 @@ router.post('/sendtoAll', (req, res) => {
         username: username,
         location: req.body.location
     });
-    console.log(payload);
+    return getSubcriptionsFromDB(username)
+        .then(function (subscriptions) {
+            let promiseChain = Promise.resolve();
 
-    getSubcriptionsFromDB(username).then(function (pushDatas) {
-        let promiseChain = Promise.resolve();
-        for (let i = 0; i < pushDatas.length; i++) {
-            const pushData = pushDatas[i];
-            if (pushData.endPoint != '') {
-                promiseChain = promiseChain.then(() => {
-                    return triggerPushMsg(pushData, payload);
-                });
+            for (let i = 0; i < subscriptions.length; i++) {
+                const subscription = subscriptions[i];
+                if (subscription.endPoint != '') {
+                    promiseChain = promiseChain.then(() => {
+                        return triggerPushMsg(subscription, payload);
+                    });
+                }
             }
-        }
-        return promiseChain;
-    }).
-        then(() => {
+            return promiseChain;
+        }).then(() => {
             res.send({ success: true });
         })
         .catch(function (err) {
-            console.log(err);
             res.status(500);
             res.setHeader('Content-Type', 'application/json');
             res.send(JSON.stringify({
@@ -108,7 +106,7 @@ function getSubcriptionsFromDB(username) {
     });
 }
 const triggerPushMsg = function (pushData, dataToSend) {
-    const pushSubscription = {
+    var pushSubscription = {
         endpoint: pushData.endPoint,
         keys: {
             p256dh: publicVapidKey,
