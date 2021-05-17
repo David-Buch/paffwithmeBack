@@ -16,16 +16,15 @@ webPush.setVapidDetails('https://smokeapipe.netlify.app', publicVapidKey, privat
 
 // Allow clients to subscribe to this application server for notifications
 router.post('/subscribe', (req, res) => {
-    if (isValidSaveRequest(req, res)) {
-        console.log(req.body);
-        saveSubscriptionToDatabase(req.body, res)
+    if (!isValidSaveRequest(req, res)) {
+        return;
     }
-
+    console.log(req.body);
+    saveSubscriptionToDatabase(req.body, res);
 });
-
 const isValidSaveRequest = (req, res) => {
     // Check the request body has at least an endpoint.
-    if (!req.body || !req.body.endpoint) {
+    if (!req.body.subscription.endpoint) {
         // Not a valid subscription.
         res.status(400);
         res.setHeader('Content-Type', 'application/json');
@@ -43,8 +42,10 @@ function saveSubscriptionToDatabase(req, res) {
     const username = req.username;
     //const endpoint = req.endpoint;
     //const auth = req.authKey;
-    const subcription = req.subcription;
-    db.query("UPDATE userdata SET subcription=? WHERE username=? LIMIT 1", [subcription, username], (err, result) => {
+    const subscription = JSON.stringify(req.subscription);
+    return db.query("UPDATE userdata SET subscription=? WHERE username=? LIMIT 1", [subscription, username], (err, result) => {
+        console.log(result);
+        console.log(subscription);
         if (err) { res.send({ error: err, success: false }); }
         if (result.affectedRows != 0) {
             if (result.changedRows != 0) {
@@ -71,11 +72,11 @@ router.post('/sendtoAll', (req, res) => {
         .then(function (subscriptions) {
             let promiseChain = Promise.resolve();
             for (let i = 0; i < subscriptions.length; i++) {
-                const subscription = JSON.parse(subscriptions[i]);
-                console.log(subcription);
-                if (subscription.endPoint != '') {
+                const subscription = subscriptions[i];
+                subObjct = JSON.parse(subscription['subscription'])
+                if (subObjct.endPoint != '') {
                     promiseChain = promiseChain.then(() => {
-                        return triggerPushMsg(subscription, payload);
+                        return triggerPushMsg(subObjct, payload);
                     });
                 }
             }
@@ -97,7 +98,7 @@ router.post('/sendtoAll', (req, res) => {
 });
 function getSubcriptionsFromDB(username) {
     return new Promise(function (resolve, reject) {
-        db.query("SELECT subcription FROM userdata WHERE username!=?", [username], (err, result) => {
+        db.query("SELECT subscription FROM userdata WHERE username!=?", [username], (err, result) => {
             //console.log((JSON.parse(JSON.stringify(result))));
             if (!err) resolve(JSON.parse(JSON.stringify(result)));
             else reject(err);
