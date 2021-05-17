@@ -1,3 +1,4 @@
+const { json } = require('express');
 const express = require('express');
 require('dotenv').config();
 const webPush = require('web-push');
@@ -11,7 +12,7 @@ const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
 
 //Tell web push about our application server
-webPush.setVapidDetails('mailto:dbuchi0802@gmail.com', publicVapidKey, privateVapidKey);
+webPush.setVapidDetails('https://smokeapipe.netlify.app', publicVapidKey, privateVapidKey);
 
 // Allow clients to subscribe to this application server for notifications
 router.post('/subscribe', (req, res) => {
@@ -40,19 +41,17 @@ const isValidSaveRequest = (req, res) => {
 };
 function saveSubscriptionToDatabase(req, res) {
     const username = req.username;
-    const endpoint = req.endpoint;
-    const auth = req.authKey;
-
-    db.query("UPDATE userdata SET endPoint=?, auth=? WHERE username=? LIMIT 1", [endpoint, auth, username], (err, result) => {
+    //const endpoint = req.endpoint;
+    //const auth = req.authKey;
+    const subcription = req.subcription;
+    db.query("UPDATE userdata SET subcription=? WHERE username=? LIMIT 1", [subcription, username], (err, result) => {
         if (err) { res.send({ error: err, success: false }); }
         if (result.affectedRows != 0) {
             if (result.changedRows != 0) {
-                console.log('endpoint set worked');
                 res.send({ success: true });
             }
             else {
-                console.log('endpoint already set');
-                res.send({ success: true, message: 'endpoint already set' });
+                res.send({ success: true, message: 'subcription already set' });
             }
         }
         else {
@@ -71,9 +70,9 @@ router.post('/sendtoAll', (req, res) => {
     return getSubcriptionsFromDB(username)
         .then(function (subscriptions) {
             let promiseChain = Promise.resolve();
-
             for (let i = 0; i < subscriptions.length; i++) {
-                const subscription = subscriptions[i];
+                const subscription = JSON.parse(subscriptions[i]);
+                console.log(subcription);
                 if (subscription.endPoint != '') {
                     promiseChain = promiseChain.then(() => {
                         return triggerPushMsg(subscription, payload);
@@ -98,29 +97,23 @@ router.post('/sendtoAll', (req, res) => {
 });
 function getSubcriptionsFromDB(username) {
     return new Promise(function (resolve, reject) {
-        db.query("SELECT endPoint,auth FROM userdata WHERE username!=?", [username], (err, result) => {
+        db.query("SELECT subcription FROM userdata WHERE username!=?", [username], (err, result) => {
             //console.log((JSON.parse(JSON.stringify(result))));
             if (!err) resolve(JSON.parse(JSON.stringify(result)));
             else reject(err);
         });
     });
 }
-const triggerPushMsg = function (pushData, dataToSend) {
-    var pushSubscription = {
-        endpoint: pushData.endPoint,
-        keys: {
-            p256dh: publicVapidKey,
-            auth: pushData.auth
-        }
-    };
-    return webPush.sendNotification(pushSubscription, dataToSend).then(console.log('push send'))
+const triggerPushMsg = function (subcription, dataToSend) {
+
+    return webPush.sendNotification(subcription).then(console.log('push send')) //works without payload
         .catch((err) => {
             console.log(err);
             if (err.statusCode === 404 || err.statusCode === 410) {
                 console.log('Subscription has expired or is no longer valid: ', err);
                 //return deleteSubscriptionFromDatabase(subscription._id);
             } else {
-                throw new Error(err);
+                throw err;
             }
         });
 };
