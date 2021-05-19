@@ -1,4 +1,3 @@
-const { json } = require('express');
 const express = require('express');
 require('dotenv').config();
 const webPush = require('web-push');
@@ -19,7 +18,6 @@ router.post('/subscribe', (req, res) => {
     if (!isValidSaveRequest(req, res)) {
         return;
     }
-    console.log(req.body);
     saveSubscriptionToDatabase(req.body, res);
 });
 const isValidSaveRequest = (req, res) => {
@@ -34,14 +32,11 @@ const isValidSaveRequest = (req, res) => {
                 message: 'Subscription must have an endpoint.'
             }
         }));
-        return false;
     }
     return true;
 };
 function saveSubscriptionToDatabase(req, res) {
     const username = req.username;
-    //const endpoint = req.endpoint;
-    //const auth = req.authKey;
     const subscription = JSON.stringify(req.subscription);
     return db.query("UPDATE userdata SET subscription=? WHERE username=? LIMIT 1", [subscription, username], (err, result) => {
         console.log(result);
@@ -64,10 +59,8 @@ function saveSubscriptionToDatabase(req, res) {
 //Send a push Notification
 router.post('/sendtoAll', (req, res) => {
     const username = req.body.username;
-    const payload = JSON.stringify({
-        username: username,
-        location: req.body.location
-    });
+    const payload = username + 'is smoking a pipe';
+
     return getSubcriptionsFromDB(username)
         .then(function (subscriptions) {
             let promiseChain = Promise.resolve();
@@ -107,7 +100,7 @@ function getSubcriptionsFromDB(username) {
 }
 const triggerPushMsg = function (subcription, dataToSend) {
 
-    return webPush.sendNotification(subcription).then(console.log('push send')) //works without payload
+    return webPush.sendNotification(subcription, dataToSend).then(console.log('push send')) //works without payload
         .catch((err) => {
             console.log(err);
             if (err.statusCode === 404 || err.statusCode === 410) {

@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const path = require('path');
 const notification = require('./routes/notification');
 const user = require('./routes/user');
+const smokingData = require('./routes/smokingData');
 const favicon = require('serve-favicon');
 
 const app = express();
@@ -19,6 +20,7 @@ app.use(cors(
 
 app.use('/notification', notification);
 app.use('/user', user);
+app.use('/smokingData', smokingData);
 
 app.use(express.json());
 
