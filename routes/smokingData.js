@@ -9,17 +9,8 @@ router.post('/send', (req, res) => {
     const startTime = req.body.startTime;
     const endTime = req.body.endTime;
     const location = req.body.location;
-    smokingDuration =
-        (endTime.split(':').reduce((acc, time) => (60 * acc) + +time) * 60) -
-        (startTime.split(':').reduce((acc, time) => (60 * acc) + +time) * 60);
-    if (smokingDuration <= 0) {
-        smokingDuration =
-            (endTime.split(':').reduce((acc, time) => (60 * acc) + +time) * 60) -
-            (startTime.split(':').reduce((acc, time) => (60 * acc) + +time) * 60) + (24 * 60 * 60);
-
-    }
-    const day = new Date().toLocaleDateString('en-CA');
-
+    const day = new Date().toLocaleDateString('de-DE');
+    const smokingDuration = getDuration(startTime, endTime);
     db.query("SELECT * FROM smokedata WHERE username=? AND startTime=? AND day=? LIMIT 1", [username, startTime, day], (err, result) => {
         if (err) { res.send({ error: err, success: false }); }
         else {
@@ -49,8 +40,21 @@ router.post('/send', (req, res) => {
     }
 });
 
+function getDuration(startTime, endTime) {
+    var duration =
+        (endTime.split(':').reduce((acc, time) => (60 * acc) + +time) * 60) -
+        (startTime.split(':').reduce((acc, time) => (60 * acc) + +time) * 60);
+    if (duration <= 0) {
+        duration =
+            (endTime.split(':').reduce((acc, time) => (60 * acc) + +time) * 60) -
+            (startTime.split(':').reduce((acc, time) => (60 * acc) + +time) * 60) + (24 * 60 * 60);
+
+    }
+    return duration;
+}
+
 router.post('/get', (req, res) => {
-    db.query("SELECT * FROM smokedata", (err, result) => {
+    db.query("SELECT * FROM smokedata WHERE username!=? ORDER BY day,startTime", [req.body.username], (err, result) => {
         if (err) { res.send({ error: err, success: false }); }
         res.send({ success: true, smokeData: JSON.stringify(result) });
     })
