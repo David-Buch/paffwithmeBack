@@ -74,7 +74,7 @@ router.get('/login', (req, res) => {
         res.send({ success: true, username: req.session.user })
     }
     else {
-        res.send({ success: false, massage: 'User not logged in!' })
+        res.send({ success: false, message: 'User not logged in!', test: req.session.user })
     }
 });
 
