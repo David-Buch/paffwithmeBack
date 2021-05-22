@@ -12,7 +12,7 @@ const app = express();
 app.use(favicon(path.join(__dirname, 'favicon.ico')));
 app.use(cors(
     {
-        origin: ['http://10.0.0.1:3000', 'http://localhost:3000', 'https://smokeapipe.netlify.app'],//Frontend
+        origin: ['http://10.0.0.1:5000', 'http://localhost:3000', 'https://smokeapipe.netlify.app'],//Frontend
         methods: ['GET', 'POST'],
         credentials: true,
     }
