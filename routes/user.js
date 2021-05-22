@@ -10,17 +10,6 @@ const saltRounds = 10;
 // instead of body parser
 router.use(express.json());
 
-router.use(session({
-    key: 'userId',
-    secret: 'keyboard cat',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        maxAge: 604800000//one Week
-    }
-}));
-router.use(cookieParser());
-
 router.post('/register', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
