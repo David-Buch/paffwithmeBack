@@ -54,7 +54,7 @@ function getDuration(startTime, endTime) {
 }
 
 router.post('/get', (req, res) => {
-    db.query("SELECT * FROM smokedata WHERE username!=? ORDER BY day,startTime", [req.body.username], (err, result) => {
+    db.query("SELECT * FROM smokedata WHERE username!=? ORDER BY day,startTime DESC", [req.body.username], (err, result) => {
         if (err) { res.send({ error: err, success: false }); }
         res.send({ success: true, smokeData: JSON.stringify(result) });
     })

@@ -20,6 +20,47 @@ router.post('/subscribe', (req, res) => {
     }
     saveSubscriptionToDatabase(req.body, res);
 });
+//Send a push Notification
+router.post('/sendtoAll', (req, res) => {
+    const username = req.body.username;
+    const payload = username + 'is smoking a pipe';
+
+    return getSubcriptionsFromDB(username)
+        .then(function (subscriptions) {
+            let promiseChain = Promise.resolve();
+            for (let i = 0; i < subscriptions.length; i++) {
+                const subscription = subscriptions[i];
+                subObjct = JSON.parse(subscription['subscription'])
+                if (subObjct.endPoint != '') {
+                    promiseChain = promiseChain.then(() => {
+                        return triggerPushMsg(subObjct, payload);
+                    });
+                }
+            }
+            return promiseChain;
+        }).then(() => {
+            res.send({ success: true });
+        })
+        .catch(function (err) {
+            res.status(500);
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify({
+                error: {
+                    id: 'unable-to-send-messages',
+                    message: `We were unable to send messages to all subscriptions : ` +
+                        `'${err.message}'`
+                }
+            }));
+        });
+});
+
+router.post('/sendtoOne', (req, res) => {
+
+    const from = req.body.from;
+    const to = req.body.to;
+    const delay = req.body.delay;
+
+});
 const isValidSaveRequest = (req, res) => {
     // Check the request body has at least an endpoint.
     if (!req.body.subscription.endpoint) {
@@ -56,39 +97,8 @@ function saveSubscriptionToDatabase(req, res) {
         }
     });
 }
-//Send a push Notification
-router.post('/sendtoAll', (req, res) => {
-    const username = req.body.username;
-    const payload = username + 'is smoking a pipe';
 
-    return getSubcriptionsFromDB(username)
-        .then(function (subscriptions) {
-            let promiseChain = Promise.resolve();
-            for (let i = 0; i < subscriptions.length; i++) {
-                const subscription = subscriptions[i];
-                subObjct = JSON.parse(subscription['subscription'])
-                if (subObjct.endPoint != '') {
-                    promiseChain = promiseChain.then(() => {
-                        return triggerPushMsg(subObjct, payload);
-                    });
-                }
-            }
-            return promiseChain;
-        }).then(() => {
-            res.send({ success: true });
-        })
-        .catch(function (err) {
-            res.status(500);
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify({
-                error: {
-                    id: 'unable-to-send-messages',
-                    message: `We were unable to send messages to all subscriptions : ` +
-                        `'${err.message}'`
-                }
-            }));
-        });
-});
+
 function getSubcriptionsFromDB(username) {
     return new Promise(function (resolve, reject) {
         db.query("SELECT subscription FROM userdata WHERE username!=?", [username], (err, result) => {

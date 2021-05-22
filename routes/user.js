@@ -1,11 +1,25 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/UserDB');
+
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const saltRounds = 10;
 
+// instead of body parser
 router.use(express.json());
+
+router.use(session({
+    key: 'userId',
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 604800000//one Week
+    }
+}));
+router.use(cookieParser());
 
 router.post('/register', (req, res) => {
     const username = req.body.username;
@@ -50,11 +64,7 @@ router.post('/login', (req, res) => {
                 if (result.length > 0) {
                     bcrypt.compare(password, result[0].password, (error, response) => {
                         if (response) {
-                            //const id=result[0].id;
-                            const jwtUsername = { username: result[0].username };
-                            const accessToken = jwt.sign(jwtUsername, process.env.ACCESS_TOKEN_SECRET);
-                            //res.json({ auth: true, successs: true, accessToken: accessToken });
-                            console.log('worked');
+                            req.session.user = result[0].username;
                             res.send({ username: result[0].username, success: true });
                         }
                         else {
@@ -70,5 +80,15 @@ router.post('/login', (req, res) => {
             }
         });
 });
+
+router.get('/login', (req, res) => {
+    if (req.session.user) {
+        res.send({ success: true, username: req.session.user })
+    }
+    else {
+        res.send({ success: false, massage: 'User not logged in!' })
+    }
+});
+
 
 module.exports = router;
