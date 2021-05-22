@@ -9,6 +9,7 @@ const smokingData = require('./routes/smokingData');
 const favicon = require('serve-favicon');
 
 const session = require('express-session');
+const cookieParser = require("cookie-parser");
 
 const app = express();
 app.use(favicon(path.join(__dirname, 'favicon.ico')));

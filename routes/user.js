@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/UserDB');
 
-const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
