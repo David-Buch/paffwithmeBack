@@ -1,4 +1,5 @@
 const express = require('express');
+require('dotenv').config();
 const router = express.Router();
 const db = require('../config/UserDB');
 
@@ -11,13 +12,15 @@ const saltRounds = 10;
 // instead of body parser
 router.use(express.json());
 router.use(session({
-    key: 'userId',
-    secret: 'keyboard cat',
+
+    name: 'userId',
+    secret: process.env.COOKIE_SECRET,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     cookie: {
         secure: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
     }
 }));
 router.use(cookieParser());
