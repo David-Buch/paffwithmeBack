@@ -1,30 +1,11 @@
 const express = require('express');
-require('dotenv').config();
 const router = express.Router();
 const db = require('../config/UserDB');
-
-const session = require("express-session");
-const cookieParser = require("cookie-parser");
-
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
-// instead of body parser
+
 router.use(express.json());
-router.use(session({
-    name: 'userId',
-    secret: process.env.COOKIE_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-        secure: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
-    }
-}));
-router.use(cookieParser());
-
-
 
 router.post('/register', (req, res) => {
     const username = req.body.username;
@@ -70,6 +51,7 @@ router.post('/login', (req, res) => {
                     bcrypt.compare(password, result[0].password, (error, response) => {
                         if (response) {
                             req.session.user = result[0].username;
+                            console.log(req.session.user);
                             res.send({ username: result[0].username, success: true });
                         }
                         else {
@@ -87,6 +69,7 @@ router.post('/login', (req, res) => {
 });
 
 router.get('/login', (req, res) => {
+    console.log(req.session.user);
     if (req.session.user) {
         res.send({ success: true, username: req.session.user })
     }

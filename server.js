@@ -8,10 +8,11 @@ const user = require('./routes/user');
 const smokingData = require('./routes/smokingData');
 const favicon = require('serve-favicon');
 
-
-
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
 
 const app = express();
+app.use(express.json());
 app.use(favicon(path.join(__dirname, 'favicon.ico')));
 app.use(cors(
     {
@@ -20,12 +21,19 @@ app.use(cors(
         credentials: true,
     }
 ));
-
+app.use(cookieParser());
+app.use(session({
+    name: 'userId',
+    secret: process.env.COOKIE_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+    }
+}));
 app.use('/notification', notification);
 app.use('/user', user);
 app.use('/smokingData', smokingData);
-
-app.use(express.json());
 
 
 function authenticateToken(req, res, next) {
