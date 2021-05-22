@@ -3,11 +3,25 @@ const router = express.Router();
 const db = require('../config/UserDB');
 
 const session = require("express-session");
+const cookieParser = require("cookie-parser");
+
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 // instead of body parser
 router.use(express.json());
+router.use(session({
+    key: 'userId',
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: true
+    }
+}));
+router.use(cookieParser());
+
+
 
 router.post('/register', (req, res) => {
     const username = req.body.username;
