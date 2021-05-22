@@ -12,7 +12,6 @@ const saltRounds = 10;
 // instead of body parser
 router.use(express.json());
 router.use(session({
-
     name: 'userId',
     secret: process.env.COOKIE_SECRET,
     resave: false,
