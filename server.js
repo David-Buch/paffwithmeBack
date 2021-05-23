@@ -30,7 +30,8 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        maxAge: 7 * 24 * 60 * 60 * 1000
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true
     }
 }));
 app.use('/notification', notification);
