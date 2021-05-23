@@ -6,6 +6,7 @@ const saltRounds = 10;
 
 
 router.use(express.json());
+router.use(express.urlencoded()); //Parse URL-encoded bodies
 
 router.post('/register', (req, res) => {
     const username = req.body.username;
@@ -74,9 +75,11 @@ router.get('/login', (req, res) => {
         res.send({ success: true, username: req.session.user })
     }
     else {
-        res.send({ success: false, message: 'User not logged in!', test: req.session.user })
+        res.send({ success: false, message: 'User not logged in!' })
     }
 });
 
+router.get('logout', (req, res) => {
 
+})
 module.exports = router;
