@@ -78,9 +78,8 @@ router.get('/login', (req, res) => {
     }
 });
 
-router.post('logout', (req, res) => {
+router.post('/logout', (req, res) => {
     const username = req.body.username
-
     if (req.session.user == username) {
         req.session.user = null;
         res.send({ success: true, message: 'User was logged out' })
