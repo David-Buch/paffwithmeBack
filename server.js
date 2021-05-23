@@ -19,8 +19,10 @@ app.use(cors(
         origin: ['http://localhost:3000', 'http://localhost:5000', 'https://smokeapipe.netlify.app'],//Frontend
         methods: ['GET', 'POST'],
         credentials: true,
+        exposedHeaders: ["set-cookie"],
     }
 ));
+app.set('trust proxy', 1);
 app.use(cookieParser());
 app.use(session({
     name: 'userId',
