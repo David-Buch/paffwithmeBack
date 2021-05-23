@@ -6,7 +6,6 @@ const saltRounds = 10;
 
 
 router.use(express.json());
-router.use(express.urlencoded()); //Parse URL-encoded bodies
 
 router.post('/register', (req, res) => {
     const username = req.body.username;
@@ -79,7 +78,15 @@ router.get('/login', (req, res) => {
     }
 });
 
-router.get('logout', (req, res) => {
+router.post('logout', (req, res) => {
+    const username = req.body.username
 
+    if (req.session.user == username) {
+        req.session.user = null;
+        res.send({ success: true, message: 'User was logged out' })
+    }
+    else {
+        res.send({ success: false, message: 'User loggedIn and User stored do not match!' })
+    }
 })
 module.exports = router;
