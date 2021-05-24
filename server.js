@@ -31,9 +31,9 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         maxAge: 7 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
+        //httpOnly: true,
+        //secure: true,
+        //sameSite: 'none',
     }
 }));
 app.use('/notification', notification);
