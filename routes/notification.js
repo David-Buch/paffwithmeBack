@@ -24,6 +24,7 @@ router.post('/subscribe', (req, res) => {
 router.post('/sendtoAll', (req, res) => {
     const username = req.body.username;
     const payload = username + 'is smoking a pipe';
+    console.log(payload);
 
     return getSubcriptionsFromDB(username)
         .then(function (subscriptions) {
@@ -59,6 +60,7 @@ router.post('/sendtoOne', (req, res) => {
     const toUser = req.body.to;
     const delay = req.body.delay;
     const payload = 'Wait' + delay + 'miutes,' + fromUser + 'is on the way to you to smoke a pipe with you';
+    console.log(payload);
 
     return getSubcriptionsFromOneDB(toUser)
         .then(function (array) {
@@ -143,7 +145,7 @@ function getSubcriptionsFromOneDB(username) {
 }
 const triggerPushMsg = function (subcription, dataToSend) {
 
-    return webPush.sendNotification(subcription, dataToSend).then(console.log('push send')) //works without payload
+    return webPush.sendNotification(subcription, 'hi').then(console.log('push send')) //works without payload
         .catch((err) => {
             console.log(err);
             if (err.statusCode === 404 || err.statusCode === 410) {
