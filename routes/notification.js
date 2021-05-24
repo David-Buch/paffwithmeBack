@@ -9,9 +9,10 @@ router.use(express.json());
 //VapidKeys
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
-
 //Tell web push about our application server
-webPush.setVapidDetails('https://smokeapipe.netlify.app', publicVapidKey, privateVapidKey);
+webPush.setVapidDetails('http://localhost:5000'
+    //'https://smokeapipe.netlify.app'
+    , publicVapidKey, privateVapidKey);
 
 // Allow clients to subscribe to this application server for notifications
 router.post('/subscribe', (req, res) => {
@@ -23,7 +24,7 @@ router.post('/subscribe', (req, res) => {
 //Send a push Notification
 router.post('/sendtoAll', (req, res) => {
     const username = req.body.username;
-    const payload = username + 'is smoking a pipe';
+    const payload = username + ' is smoking a pipe';
     console.log(payload);
 
     return getSubcriptionsFromDB(username)
@@ -59,7 +60,7 @@ router.post('/sendtoOne', (req, res) => {
     const fromUser = req.body.from;
     const toUser = req.body.to;
     const delay = req.body.delay;
-    const payload = 'Wait' + delay + 'miutes,' + fromUser + 'is on the way to you to smoke a pipe with you';
+    const payload = 'Wait ' + delay + ' miutes, ' + fromUser + ' is on the way to you';
     console.log(payload);
 
     return getSubcriptionsFromOneDB(toUser)
@@ -145,7 +146,11 @@ function getSubcriptionsFromOneDB(username) {
 }
 const triggerPushMsg = function (subcription, dataToSend) {
 
-    return webPush.sendNotification(subcription, 'hi').then(console.log('push send')) //works without payload
+    var options = {
+        TTL: 60
+    };
+
+    return webPush.sendNotification(subcription, dataToSend, options).then(console.log('push send')) //works without payload
         .catch((err) => {
             console.log(err);
             if (err.statusCode === 404 || err.statusCode === 410) {
