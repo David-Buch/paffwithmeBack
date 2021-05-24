@@ -55,12 +55,39 @@ router.post('/sendtoAll', (req, res) => {
 });
 
 router.post('/sendtoOne', (req, res) => {
-
-    const from = req.body.from;
-    const to = req.body.to;
+    const fromUser = req.body.from;
+    const toUser = req.body.to;
     const delay = req.body.delay;
+    const payload = 'Wait' + delay + 'miutes,' + fromUser + 'is on the way to you to smoke a pipe with you';
 
+    return getSubcriptionsFromOneDB(toUser)
+        .then(function (array) {
+            let promiseChain = Promise.resolve();
+            subscription = array[0];
+            subObjct = JSON.parse(subscription['subscription'])
+            console.log(subObjct);
+            if (subObjct.endPoint != '') {
+                promiseChain = promiseChain.then(() => {
+                    return triggerPushMsg(subObjct, payload);
+                });
+            }
+            return promiseChain;
+        }).then(() => {
+            res.send({ success: true });
+        })
+        .catch(function (err) {
+            res.status(500);
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify({
+                error: {
+                    id: 'unable-to-send-messages',
+                    message: `We were unable to send messages to all subscriptions : ` +
+                        `'${err.message}'`
+                }
+            }));
+        });
 });
+
 const isValidSaveRequest = (req, res) => {
     // Check the request body has at least an endpoint.
     if (!req.body.subscription.endpoint) {
@@ -98,11 +125,17 @@ function saveSubscriptionToDatabase(req, res) {
     });
 }
 
-
 function getSubcriptionsFromDB(username) {
     return new Promise(function (resolve, reject) {
         db.query("SELECT subscription FROM userdata WHERE username!=?", [username], (err, result) => {
-            //console.log((JSON.parse(JSON.stringify(result))));
+            if (!err) resolve(JSON.parse(JSON.stringify(result)));
+            else reject(err);
+        });
+    });
+}
+function getSubcriptionsFromOneDB(username) {
+    return new Promise(function (resolve, reject) {
+        db.query("SELECT subscription FROM userdata WHERE username=? LIMIT 1", [username], (err, result) => {
             if (!err) resolve(JSON.parse(JSON.stringify(result)));
             else reject(err);
         });
