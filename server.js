@@ -22,18 +22,17 @@ app.use(cors(
         exposedHeaders: ["set-cookie"],
     }
 ));
-//app.set('trust proxy', 1);
-app.use(cookieParser());
-app.use(session({
-    name: 'userId',
+//app.use(cookieParser());
+//app.use(session({
+name: 'userId',
     secret: process.env.COOKIE_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        //httpOnly: true,
-        //secure: true,
-        //sameSite: 'none',
+        resave: false,
+            saveUninitialized: false,
+                cookie: {
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+            secure: true,
+                sameSite: 'none',
     }
 }));
 app.use('/notification', notification);

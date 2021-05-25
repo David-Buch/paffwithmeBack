@@ -50,8 +50,8 @@ router.post('/login', (req, res) => {
                 if (result.length > 0) {
                     bcrypt.compare(password, result[0].password, (error, response) => {
                         if (response) {
-                            req.session.user = result[0].username;
-                            console.log(req.session.user);
+                            //req.session.user = result[0].username;
+                            //console.log(req.session.user);
                             res.send({ username: result[0].username, success: true });
                         }
                         else {
