@@ -8,8 +8,8 @@ const user = require('./routes/user');
 const smokingData = require('./routes/smokingData');
 const favicon = require('serve-favicon');
 
-const session = require("express-session");
-const cookieParser = require("cookie-parser");
+//const session = require("express-session");
+//const cookieParser = require("cookie-parser");
 
 const app = express();
 app.use(express.json());
@@ -23,7 +23,7 @@ app.use(cors(
     }
 ));
 //app.use(cookieParser());
-//app.use(session({
+/*app.use(session({
 name: 'userId',
     secret: process.env.COOKIE_SECRET,
         resave: false,
@@ -35,6 +35,8 @@ name: 'userId',
                 sameSite: 'none',
     }
 }));
+*/
+
 app.use('/notification', notification);
 app.use('/user', user);
 app.use('/smokingData', smokingData);
