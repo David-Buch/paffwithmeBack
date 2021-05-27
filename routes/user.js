@@ -10,6 +10,7 @@ router.use(express.json());
 router.post('/register', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
+    const color = Math.floor(Math.random() * 5);
     username.toLowerCase();
 
     db.query("SELECT * FROM userdata WHERE username=? LIMIT 1",
@@ -24,8 +25,8 @@ router.post('/register', (req, res) => {
                     bcrypt.hash(password, saltRounds, (err, hash) => {
                         if (err) { res.send({ error: err, success: false }); }
                         else {
-                            db.query("INSERT INTO userdata (username,password) VALUES (?,?)",
-                                [username, hash], (err, result) => {
+                            db.query("INSERT INTO userdata (username,password,color) VALUES (?,?,?)",
+                                [username, hash, color], (err, result) => {
                                     if (err) { res.send({ error: err, success: false }); }
                                     else {
                                         console.log('Success');

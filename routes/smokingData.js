@@ -10,6 +10,7 @@ router.post('/send', (req, res) => {
     const endTime = req.body.endTime;
     const location = req.body.location;
     const day = new Date().toLocaleDateString('de-DE');
+
     const smokingDuration = getDuration(startTime, endTime);
     db.query("SELECT * FROM smokedata WHERE username=? AND startTime=? AND day=? LIMIT 1", [username, startTime, day], (err, result) => {
         if (err) { res.send({ error: err, success: false }); }
@@ -19,7 +20,7 @@ router.post('/send', (req, res) => {
                 res.send({ message: 'Smokedata already exists!', success: false })
             }
             else {
-                db.query("INSERT INTO smokedata (username,currentlySmoking,day,startTime,endTime,location) VALUES (?,?,?,?,?,?)",
+                db.query("INSERT INTO smokedata (username,date,currentlySmoking,day,startTime,endTime,location) VALUES (?,NOW(),?,?,?,?,?)",
                     [username, true, day, startTime, endTime, location], (err, result) => {
                         if (err) { res.send({ error: err, success: false }); }
                         else {
@@ -53,7 +54,13 @@ function getDuration(startTime, endTime) {
     return duration;
 }
 
+function deletData() {
+    db.query("DELETE FROM smokedata WHERE date < NOW() - INTERVAL 7 DAY", (err, result) => {
+        console.log(result);
+    })
+}
 router.post('/get', (req, res) => {
+    deletData();
     db.query("SELECT * FROM smokedata WHERE username!=? ORDER BY day,startTime DESC", [req.body.username], (err, result) => {
         if (err) { res.send({ error: err, success: false }); }
         res.send({ success: true, smokeData: JSON.stringify(result) });
