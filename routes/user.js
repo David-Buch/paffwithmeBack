@@ -30,7 +30,7 @@ router.post('/register', (req, res) => {
                                     if (err) { res.send({ error: err, success: false }); }
                                     else {
                                         console.log('Success');
-                                        res.send({ success: true });
+                                        res.send({ success: true, color: color });
                                     }
                                 });
                         }
@@ -53,7 +53,7 @@ router.post('/login', (req, res) => {
                         if (response) {
                             //req.session.user = result[0].username;
                             //console.log(req.session.user);
-                            res.send({ username: result[0].username, success: true });
+                            res.send({ username: result[0].username, color: result[0].color, success: true });
                         }
                         else {
                             console.log('not worked1');

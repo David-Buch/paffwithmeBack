@@ -9,6 +9,7 @@ router.post('/send', (req, res) => {
     const startTime = req.body.startTime;
     const endTime = req.body.endTime;
     const location = req.body.location;
+    const color = req.body.color;
     const day = new Date().toLocaleDateString('de-DE');
 
     const smokingDuration = getDuration(startTime, endTime);
@@ -20,8 +21,8 @@ router.post('/send', (req, res) => {
                 res.send({ message: 'Smokedata already exists!', success: false })
             }
             else {
-                db.query("INSERT INTO smokedata (username,date,currentlySmoking,day,startTime,endTime,location) VALUES (?,NOW(),?,?,?,?,?)",
-                    [username, true, day, startTime, endTime, location], (err, result) => {
+                db.query("INSERT INTO smokedata (username,date,color,currentlySmoking,day,startTime,endTime,location) VALUES (?,NOW(),?,?,?,?,?,?)",
+                    [username, color, true, day, startTime, endTime, location], (err, result) => {
                         if (err) { res.send({ error: err, success: false }); }
                         else {
                             res.send({ success: true });
@@ -63,8 +64,11 @@ router.post('/get', (req, res) => {
     deletData();
     db.query("SELECT * FROM smokedata WHERE username!=? ORDER BY day,startTime DESC", [req.body.username], (err, result) => {
         if (err) { res.send({ error: err, success: false }); }
+        const data = JSON.parse(JSON.stringify(result));
+        //console.log(data);
         res.send({ success: true, smokeData: JSON.stringify(result) });
-    })
+    });
+
 });
 
 module.exports = router;
