@@ -42,17 +42,4 @@ app.use('/user', user);
 app.use('/smokingData', smokingData);
 
 
-function authenticateToken(req, res, next) {
-    const authHeader = req.headers['Authorization'];
-    const token = authHeader && authHeader.split('')[1];
-    if (token == null) { res.json({ auth: false, success: false, message: 'No token' }); }
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, username) => {
-        if (err) {
-            res.json({ auth: false, success: false, message: 'No valide token' });
-        }
-        req.username = username;
-        next();
-    })
-}
-
 app.listen(process.env.PORT || 3003, () => console.log('up and running'));
