@@ -30,14 +30,22 @@ router.post('/sendtoAll', (req, res) => {
     return getSubcriptionsFromDB(username)
         .then(function (subscriptions) {
             let promiseChain = Promise.resolve();
+
+            // cleaning the array 
+            subscriptions.forEach(sub => {
+                if (sub.subscription.length == 0) {
+                    //delet object
+                    subscriptions.splice(subscriptions.indexOf(sub), 1);
+                }
+            });
+            // sending to every user
             for (let i = 0; i < subscriptions.length; i++) {
                 const subscription = subscriptions[i];
-                subObjct = JSON.parse(subscription['subscription'])
-                if (subObjct.endPoint != '') {
-                    promiseChain = promiseChain.then(() => {
-                        return triggerPushMsg(subObjct, payload);
-                    });
-                }
+                subObjct = JSON.parse(subscription['subscription']);
+                promiseChain = promiseChain.then(() => {
+                    return triggerPushMsg(subObjct, payload);
+                });
+
             }
             return promiseChain;
         }).then(() => {
@@ -54,6 +62,7 @@ router.post('/sendtoAll', (req, res) => {
                 }
             }));
         });
+
 });
 
 router.post('/sendtoOne', (req, res) => {
@@ -66,15 +75,26 @@ router.post('/sendtoOne', (req, res) => {
     return getSubcriptionsFromOneDB(toUser)
         .then(function (array) {
             let promiseChain = Promise.resolve();
-            subscription = array[0];
-            subObjct = JSON.parse(subscription['subscription'])
-            console.log(subObjct);
-            if (subObjct.endPoint != '') {
+            // cleaning the array 
+            console.log(array);
+            array.forEach(sub => {
+                if (sub.subscription.length == 0) {
+                    //delet object
+                    array.splice(array.indexOf(sub), 1);
+                }
+            });
+            if (array.length == 0) {
+                // to nothing 
+                console.log('empty');
+            }
+            else {
+                subscription = array[0];
+                subObjct = JSON.parse(subscription['subscription'])
                 promiseChain = promiseChain.then(() => {
                     return triggerPushMsg(subObjct, payload);
                 });
+                return promiseChain;
             }
-            return promiseChain;
         }).then(() => {
             res.send({ success: true });
         })
@@ -89,6 +109,7 @@ router.post('/sendtoOne', (req, res) => {
                 }
             }));
         });
+
 });
 
 const isValidSaveRequest = (req, res) => {
