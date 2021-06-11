@@ -16,7 +16,7 @@ router.post('/send', (req, res) => {
 
     const now = new Date();// now 
     const start = new Date();
-    now.setTime(now.getTime() - now.getTimezoneOffset() * 60 * 1000);
+    now.setTime(now.getTime() - now.getTimezoneOffset() * 60 * 1000 - 120 * 60 * 1000);
     start.setUTCHours(parseInt(startTime.split(':')[0], 10), parseInt(startTime.split(':')[1], 10));
 
     const milsUntilStart = getStartDuration(now.getTime(), start.getTime());
