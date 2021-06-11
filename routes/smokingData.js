@@ -93,15 +93,6 @@ router.post('/getLive', (req, res) => {
         else {
             res.send({ success: true, currentlySmoking: false });
         }
-
-        /*
-                db.query("SELECT currentlySmoking FROM smokedata WHERE username=? ORDER BY id DESC LIMIT 1", [username], (err, result) => {
-                    if (err) { res.send({ error: err, success: false }); }
-                    
-                })
-            }
-        });
-*/
     });
 });
 
