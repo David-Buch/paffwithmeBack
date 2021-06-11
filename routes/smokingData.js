@@ -34,7 +34,7 @@ router.post('/send', (req, res) => {
                     [username, color, false, day, startTime, endTime, location], (err, result) => {
                         if (err) { res.send({ error: err, success: false }); }
                         else {
-                            res.send({ success: true, timezone: now.getTimezoneOffset(), time: now.getTime() });
+                            res.send({ success: true, untilStart: (milsUntilStart / (1000 * 60)), somikingDuration: (smokingDuration / (1000 * 60)) });
                             setTimeout(function () {
                                 changeDB(username, startTime, true);
                                 setTimeout(function () {
@@ -52,13 +52,12 @@ router.post('/send', (req, res) => {
 function changeDB(username, startTime, value) {
     db.query("UPDATE smokedata SET currentlySmoking=? WHERE username=? AND startTime=? LIMIT 1",
         [value, username, startTime], (err, result) => {
-            if (err) { console.log(err); }
+            if (err) { console.log('Error' + err); }
         });
     console.log('worked')
 }
 function getStartDuration(now, then) {
     var diff = then - now;
-    console.log(diff);
     return diff;
 }
 function getDuration(startTime, endTime) {
@@ -67,7 +66,6 @@ function getDuration(startTime, endTime) {
     if (diff < 0) {
         diff = moment.duration(moment(startTime, 'HH:mm').diff(moment(endTime, 'HH:mm').add(24, 'hours')));
     }
-    console.log(diff);
     return Math.abs(diff);
 }
 function deletData() {
