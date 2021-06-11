@@ -34,7 +34,7 @@ router.post('/send', (req, res) => {
                     [username, color, false, day, startTime, endTime, location], (err, result) => {
                         if (err) { res.send({ error: err, success: false }); }
                         else {
-                            res.send({ success: true });
+                            res.send({ success: true, timezone: now.getTimezoneOffset(), time: now.getTime() });
                             setTimeout(function () {
                                 changeDB(username, startTime, true);
                                 setTimeout(function () {
