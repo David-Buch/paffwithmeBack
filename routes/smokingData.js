@@ -85,10 +85,24 @@ router.post('/get', (req, res) => {
 });
 router.post('/getLive', (req, res) => {
     const username = req.body.username;
-    db.query("SELECT currentlySmoking FROM smokedata WHERE username=? ORDER BY id DESC LIMIT 1", [username], (err, result) => {
+    db.query("SELECT * FROM smokedata  WHERE username=? ORDER BY id DESC LIMIT 1", [username], (err, result) => {
         if (err) { res.send({ error: err, success: false }); }
-        res.send({ success: true, currentlySmoking: result[0].currentlySmoking });
-    })
+        if (result.length > 0) {
+            res.send({ success: true, currentlySmoking: result[0].currentlySmoking });
+        }
+        else {
+            res.send({ success: true, currentlySmoking: false });
+        }
+
+        /*
+                db.query("SELECT currentlySmoking FROM smokedata WHERE username=? ORDER BY id DESC LIMIT 1", [username], (err, result) => {
+                    if (err) { res.send({ error: err, success: false }); }
+                    
+                })
+            }
+        });
+*/
+    });
 });
 
 module.exports = router;
