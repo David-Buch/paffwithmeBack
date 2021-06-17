@@ -6,6 +6,7 @@ const path = require('path');
 const notification = require('./routes/notification');
 const user = require('./routes/user');
 const smokingData = require('./routes/smokingData');
+const stories = require('./routes/stories');
 const favicon = require('serve-favicon');
 
 //const session = require("express-session");
@@ -40,6 +41,6 @@ name: 'userId',
 app.use('/notification', notification);
 app.use('/user', user);
 app.use('/smokingData', smokingData);
-
+app.use('/stories', stories);
 
 app.listen(process.env.PORT || 3003, () => console.log('up and running'));
