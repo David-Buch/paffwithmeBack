@@ -33,6 +33,8 @@ router.post('/get', (req, res) => {
     //working on it next time
     const username = req.body.username;
     const directoryPath = path.join(__dirname, '../', 'uploads'); //err C:\Users\David\paffwithme\server\routes\uploads
+    let isStorie = false;
+    let fileToSend = ''
 
     fs.readdir(directoryPath, function (err, files) {
         //handling error
@@ -42,30 +44,27 @@ router.post('/get', (req, res) => {
         //listing all files using forEach
         files.forEach(function (file) {
             if (username == file.split('-')[0]) {
-                var options = {
-                    root: directoryPath
-                };
-                res.sendFile(file, options, function (err) {
-                    if (err) {
-                        console.log(err);
-                    } else {
-                        console.log('Sent:', file);
-                    }
-                });
-                //res.download(filePath);
+                isStorie = true;
+                fileToSend = file;
             }
-            else {
-                res.send({ success: false, message: 'No Storie from this User!' })
-            }
-
         });
-    });
+        if (isStorie) {
+            var options = {
+                root: directoryPath
+            };
+            res.sendFile(fileToSend, options, function (err) {
+                if (err) {
+                    console.log('error here:' + err);
+                } else {
+                    console.log('Sent:', fileToSend);
+                }
+            });
+        }
+        else {
+            res.send({ success: false, message: 'No Storie from this User!' })
+        }
 
-    //send files
-    function sendFiles() {
-        let filePath = path.join(__dirname, "youe-file.whatever");
-        res.download(filePath);
-    }
+    });
 });
 
 const deleteFile = (filename) => {
