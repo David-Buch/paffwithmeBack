@@ -8,7 +8,9 @@ const path = require('path');
 let timeOuts = [];
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, './uploads');
+        const path = `./uploads/stories`
+        fs.mkdirSync(path, { recursive: true });
+        return cb(null, path)
     },
 
     filename: function (req, file, cb) {
@@ -20,12 +22,12 @@ router.use(express.json());
 
 router.post('/upload', upload.single('storie'), (req, res) => {
     console.log(req.file);
-
-    //deleting Stories  
+    //deleting Stories  not needed because heroku automaticly delets things from the fs
+    /*
     const timer = setTimeout(() => deleteFile(req.file.filename),
         24 * 60 * 60 * 1000)
     timeOuts.push(timer);
-
+    */
     res.send('worked');
 });
 
