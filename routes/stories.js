@@ -32,9 +32,9 @@ router.post('/upload', upload.single('storie'), (req, res) => {
 });
 
 router.post('/get', (req, res) => {
-    //working on it next time
+    //error here something with the path
     const username = req.body.username;
-    const directoryPath = path.join(__dirname, '../', 'uploads'); //err C:\Users\David\paffwithme\server\routes\uploads
+    const directoryPath = path.join(__dirname, '../', 'uploads', '/stories'); //err C:\Users\David\paffwithme\server\routes\uploads
     let isStorie = false;
     let fileToSend = ''
 
