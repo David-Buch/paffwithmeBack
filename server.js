@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(favicon(path.join(__dirname, 'favicon.ico')));
 app.use(cors(
     {
-        origin: ['http://localhost:3000', 'http://localhost:5000', 'https://smokeapipe.netlify.app'],
+        origin: ['http://localhost:3000', 'http://localhost:5000', 'https://smokeapipe.netlify.app', 'https://dev-pwm.netlify.app'],
         methods: ['GET', 'POST'],
         credentials: true,
         exposedHeaders: ["set-cookie"],
